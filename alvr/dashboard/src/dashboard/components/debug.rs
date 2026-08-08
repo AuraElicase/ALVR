@@ -1,4 +1,5 @@
 use crate::dashboard::ServerRequest;
+use crate::language::tr;
 use eframe::egui::Ui;
 
 pub fn debug_tab_ui(ui: &mut Ui) -> Option<ServerRequest> {
@@ -10,19 +11,19 @@ For that, use other means of recording, for example through headset or desktop V
     );
 
     ui.columns(4, |ui| {
-        if ui[0].button("Capture frame").clicked() {
+        if ui[0].button(tr("Capture frame")).clicked() {
             request = Some(ServerRequest::CaptureFrame);
         }
 
-        if ui[1].button("Insert IDR").clicked() {
+        if ui[1].button(tr("Insert IDR")).clicked() {
             request = Some(ServerRequest::InsertIdr);
         }
 
-        if ui[2].button("Start recording").clicked() {
+        if ui[2].button(tr("Start recording")).clicked() {
             request = Some(ServerRequest::StartRecording);
         }
 
-        if ui[3].button("Stop recording").clicked() {
+        if ui[3].button(tr("Stop recording")).clicked() {
             request = Some(ServerRequest::StopRecording);
         }
     });

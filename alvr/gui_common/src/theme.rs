@@ -1,4 +1,10 @@
-use egui::{self, Color32, Context, CornerRadius, Stroke, TextStyle, ThemePreference, Visuals};
+use egui::{
+    self, Color32, Context, CornerRadius, FontData, FontDefinitions, FontFamily, Stroke, TextStyle,
+    ThemePreference, Visuals,
+};
+
+#[cfg(not(target_arch = "wasm32"))]
+use std::{path::Path, sync::Arc};
 
 pub const ACCENT: Color32 = Color32::from_rgb(0, 76, 176);
 pub const BG: Color32 = Color32::from_rgb(30, 30, 30);
@@ -51,6 +57,7 @@ pub mod graph_colors {
 }
 
 pub fn set_theme(ctx: &Context) {
+    install_cjk_font(ctx);
     ctx.set_theme(ThemePreference::Dark);
 
     let mut style = (*ctx.global_style()).clone();
@@ -96,3 +103,44 @@ pub fn set_theme(ctx: &Context) {
 
     ctx.set_visuals(visuals);
 }
+
+#[cfg(not(target_arch = "wasm32"))]
+fn install_cjk_font(ctx: &Context) {
+    let paths = [
+        std::env::var_os("ALVR_CJK_FONT").map(Into::into),
+        #[cfg(windows)]
+        Some(Path::new(r"C:\Windows\Fonts\Deng.ttf").to_owned()),
+        #[cfg(windows)]
+        Some(Path::new(r"C:\Windows\Fonts\NotoSansSC-VF.ttf").to_owned()),
+        #[cfg(target_os = "linux")]
+        Some(Path::new("/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc").to_owned()),
+        #[cfg(target_os = "linux")]
+        Some(Path::new("/usr/share/fonts/truetype/wqy/wqy-zenhei.ttc").to_owned()),
+        #[cfg(target_os = "macos")]
+        Some(Path::new("/System/Library/Fonts/PingFang.ttc").to_owned()),
+    ];
+
+    let Some(font_path) = paths.into_iter().flatten().find(|path| path.is_file()) else {
+        return;
+    };
+    let Ok(font_bytes) = std::fs::read(&font_path) else {
+        return;
+    };
+
+    let mut fonts = FontDefinitions::default();
+    fonts.font_data.insert(
+        "alvr-cjk".to_owned(),
+        Arc::new(FontData::from_owned(font_bytes)),
+    );
+
+    for family in [FontFamily::Proportional, FontFamily::Monospace] {
+        if let Some(fonts_in_family) = fonts.families.get_mut(&family) {
+            fonts_in_family.push("alvr-cjk".to_owned());
+        }
+    }
+
+    ctx.set_fonts(fonts);
+}
+
+#[cfg(target_arch = "wasm32")]
+fn install_cjk_font(_: &Context) {}

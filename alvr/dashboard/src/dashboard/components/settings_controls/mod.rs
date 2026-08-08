@@ -14,6 +14,7 @@ pub mod text;
 pub mod up_down;
 pub mod vector;
 
+use crate::language::tr;
 use alvr_packets::{PathSegment, PathValuePair};
 use alvr_session::settings_schema::SchemaNode;
 use eframe::egui::Ui;
@@ -44,11 +45,13 @@ fn grid_flow_inline(ui: &mut Ui, allow_inline: bool) {
 }
 
 pub fn get_display_name(id: &str, strings: &HashMap<String, String>) -> String {
-    strings.get("display_name").cloned().unwrap_or_else(|| {
+    let display_name = strings.get("display_name").cloned().unwrap_or_else(|| {
         let mut chars = id.chars();
         chars.next().unwrap().to_uppercase().collect::<String>()
             + chars.as_str().replace('_', " ").as_str()
-    })
+    });
+
+    tr(&display_name)
 }
 
 pub fn f64_eq(f1: f64, f2: f64) -> bool {

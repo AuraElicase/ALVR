@@ -1,4 +1,5 @@
 use super::{NestingInfo, SettingControl, reset};
+use crate::language::tr;
 use alvr_gui_common::DisplayString;
 use alvr_packets::PathValuePair;
 use alvr_session::settings_schema::{ChoiceControlType, SchemaEntry, SchemaNode};
@@ -10,7 +11,7 @@ use serde_json as json;
 use std::collections::HashMap;
 
 fn get_display_name(id: &str, strings: &HashMap<String, String>) -> String {
-    strings.get("display_name").cloned().unwrap_or_else(|| {
+    let display_name = strings.get("display_name").cloned().unwrap_or_else(|| {
         let mut chars = id.chars();
 
         let mut new_chars = vec![chars.next().unwrap()];
@@ -25,7 +26,9 @@ fn get_display_name(id: &str, strings: &HashMap<String, String>) -> String {
         }
 
         new_chars.into_iter().collect::<String>()
-    })
+    });
+
+    tr(&display_name)
 }
 
 pub struct Control {
@@ -148,7 +151,7 @@ impl Control {
                     self.variant_labels.len() + 1,
                     |idx| {
                         if idx == 0 {
-                            "Preset not applied".into()
+                            tr("Preset not applied")
                         } else {
                             self.variant_labels[idx - 1].display.clone()
                         }

@@ -1,4 +1,5 @@
 use super::{NestingInfo, SettingControl, reset};
+use crate::language::tr;
 use alvr_packets::PathValuePair;
 use alvr_session::settings_schema::SchemaNode;
 use eframe::{
@@ -17,9 +18,9 @@ pub struct Control {
 impl Control {
     pub fn new(nesting_info: NestingInfo, default_set: bool, schema_content: SchemaNode) -> Self {
         let default_string = if default_set {
-            "Set".into()
+            tr("Set")
         } else {
-            "Default".into()
+            tr("Default")
         };
 
         let control = {
@@ -58,8 +59,8 @@ impl Control {
         }
 
         ui.with_layout(Layout::left_to_right(Align::Center), |ui| {
-            if ui.selectable_value(set_mut, false, "Default").clicked()
-                || ui.selectable_value(set_mut, true, "Set").clicked()
+            if ui.selectable_value(set_mut, false, tr("Default")).clicked()
+                || ui.selectable_value(set_mut, true, tr("Set")).clicked()
             {
                 request = get_request(&self.nesting_info, *set_mut);
             }

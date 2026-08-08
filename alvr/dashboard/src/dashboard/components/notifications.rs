@@ -1,3 +1,4 @@
+use crate::language::tr;
 use alvr_common::{LogEntry, LogSeverity};
 use alvr_gui_common::theme::{self, log_colors};
 use alvr_session::Settings;
@@ -141,10 +142,10 @@ impl NotificationBar {
         bottom_bar.show(ui, |ui| {
             ui.with_layout(Layout::right_to_left(alignment), |ui| {
                 if !self.expanded {
-                    if ui.small_button("Expand").clicked() {
+                    if ui.small_button(tr("Expand")).clicked() {
                         self.expanded = true;
                     }
-                } else if ui.button("Reduce").clicked() {
+                } else if ui.button(tr("Reduce")).clicked() {
                     self.expanded = false;
                 }
                 ui.with_layout(Layout::left_to_right(alignment), |ui| {

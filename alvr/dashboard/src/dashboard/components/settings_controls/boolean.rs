@@ -1,4 +1,5 @@
 use super::{NestingInfo, reset};
+use crate::language::tr;
 use alvr_packets::PathValuePair;
 use eframe::{
     egui::{Layout, Ui},
@@ -14,7 +15,7 @@ pub struct Control {
 
 impl Control {
     pub fn new(nesting_info: NestingInfo, default: bool) -> Self {
-        let default_string = if default { "ON".into() } else { "OFF".into() };
+        let default_string = if default { tr("ON") } else { tr("OFF") };
 
         Self {
             nesting_info,
