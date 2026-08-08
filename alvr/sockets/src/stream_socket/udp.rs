@@ -9,10 +9,11 @@ use std::ffi::c_int;
 use std::{
     cmp::Ordering,
     collections::{HashMap, HashSet},
+    io::ErrorKind,
     mem::{self, MaybeUninit},
     net::{IpAddr, UdpSocket},
-    ptr,
-    time::Duration,
+    ptr, thread,
+    time::{Duration, Instant},
 };
 
 pub const SHARD_PREFIX_SIZE: usize = mem::size_of::<u16>() // stream ID
@@ -51,7 +52,23 @@ pub fn bind(
 }
 
 pub fn connect(socket: &UdpSocket, peer_ip: IpAddr, port: u16, timeout: Duration) -> Result<()> {
-    socket.connect((peer_ip, port))?;
+    // Android can transiently return EAGAIN while the Wi-Fi route is being established. Keep the
+    // stream handshake alive during that window instead of treating it as a permanent failure.
+    let deadline = Instant::now() + timeout;
+    loop {
+        match socket.connect((peer_ip, port)) {
+            Ok(()) => break,
+            Err(e) if matches!(e.kind(), ErrorKind::WouldBlock | ErrorKind::TimedOut) => {
+                if Instant::now() >= deadline {
+                    return Err(e.into());
+                }
+
+                thread::sleep(Duration::from_millis(10));
+            }
+            Err(e) => return Err(e.into()),
+        }
+    }
+
     socket.set_read_timeout(Some(timeout))?;
 
     Ok(())
