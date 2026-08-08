@@ -1,0 +1,30 @@
+alvr/client_core/src/connection.rs
+  s_29d5e9d01f35fb::t_4de88f659801f6 200-204,247,264
+alvr/packets/src/lib.rs
+  s_29d5e9d01f35fb::t_be4e5fc8cb722d 80-81,107
+alvr/server_core/src/connection.rs
+  s_29d5e9d01f35fb::t_6fa42d4203b1bc 772-792,795,806-809,842
+alvr/sockets/src/lib.rs
+  s_29d5e9d01f35fb::t_b1d0f507a9815e 11,24-36,280-295
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "995db79b4568ff86d21773928794d48888aa7040",
+  "prompts": {},
+  "humans": {
+    "h_8e6780fc7b4bb1": {
+      "author": "AuraElicase <auraelicase@outlook.com>"
+    }
+  },
+  "sessions": {
+    "s_29d5e9d01f35fb": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019fdfe9-3047-78e0-ba76-b535787634a5",
+        "model": "unknown"
+      },
+      "human_author": "AuraElicase <auraelicase@outlook.com>"
+    }
+  }
+}
