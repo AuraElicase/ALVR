@@ -1,0 +1,54 @@
+alvr/dashboard/README.md
+  s_d06db02b2b8489::t_7f108cf7c729f0 4-10
+alvr/dashboard/src/dashboard/components/debug.rs
+  s_d06db02b2b8489::t_d1d164188876f2 2,14,18,22,26
+alvr/dashboard/src/dashboard/components/devices.rs
+  s_d06db02b2b8489::t_eebcce45fcabb7 2,80,137,146,151,157,161,209,237,272,291,321,325,359,365,387-392,394
+alvr/dashboard/src/dashboard/components/installation.rs
+  s_d06db02b2b8489::t_b6eefc73fa2fe8 2,47,51,56,68,73,89
+alvr/dashboard/src/dashboard/components/notifications.rs
+  s_d06db02b2b8489::t_3f76d0a14a6bfa 1,145,148
+alvr/dashboard/src/dashboard/components/settings_controls/boolean.rs
+  s_d06db02b2b8489::t_79a8d7b739030d 2,18
+alvr/dashboard/src/dashboard/components/settings_controls/choice.rs
+  s_d06db02b2b8489::t_d734b0024791ba 2,14,29-31,154
+alvr/dashboard/src/dashboard/components/settings_controls/collapsible.rs
+  s_d06db02b2b8489::t_6fc11d05b043f8 2,17-18
+alvr/dashboard/src/dashboard/components/settings_controls/dictionary.rs
+  s_d06db02b2b8489::t_552863b5a72822 6,76,184
+alvr/dashboard/src/dashboard/components/settings_controls/mod.rs
+  s_d06db02b2b8489::t_a40dac6b4c0645 17,48,52-54
+alvr/dashboard/src/dashboard/components/settings_controls/optional.rs
+  s_d06db02b2b8489::t_c654353e4a64e1 2,21,23,62-63
+alvr/dashboard/src/dashboard/components/settings_controls/reset.rs
+  s_d06db02b2b8489::t_eeadcd9bc0681a 1,16
+alvr/dashboard/src/dashboard/components/settings_controls/section.rs
+  s_d06db02b2b8489::t_bd816295ecb3f3 2,44-45,124,127,131-134
+alvr/dashboard/src/dashboard/components/settings_controls/vector.rs
+  s_d06db02b2b8489::t_75cb3f15cb21b3 6,61,130
+alvr/dashboard/src/dashboard/mod.rs
+  s_d06db02b2b8489::t_3f9ce97f8910c1 9,66,93-95,97-100,203,254,265,268,274,281-282,284-285,300-302
+alvr/gui_common/src/theme.rs
+  s_d06db02b2b8489::t_d2366e88bac04d 1-7,60,106-146
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "4eaed9116c37fd68d1036867a63788ac707cbfc1",
+  "prompts": {},
+  "humans": {
+    "h_8e6780fc7b4bb1": {
+      "author": "AuraElicase <auraelicase@outlook.com>"
+    }
+  },
+  "sessions": {
+    "s_d06db02b2b8489": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019fdd4c-cf7f-71e2-b470-2baec1b361a9",
+        "model": "unknown"
+      },
+      "human_author": "AuraElicase <auraelicase@outlook.com>"
+    }
+  }
+}
