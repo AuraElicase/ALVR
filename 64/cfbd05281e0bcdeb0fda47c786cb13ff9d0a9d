@@ -1,0 +1,24 @@
+alvr/dashboard/src/dashboard/components/logs.rs
+  s_d319c2b8a7d62b::t_120f6a833937f9 1,7,15,19,26-27,38-39,48-52,74-78,81-85,96,110,117,120-173,176,186-191
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "64cfbd05281e0bcdeb0fda47c786cb13ff9d0a9d",
+  "prompts": {},
+  "humans": {
+    "h_8e6780fc7b4bb1": {
+      "author": "AuraElicase <auraelicase@outlook.com>"
+    }
+  },
+  "sessions": {
+    "s_d319c2b8a7d62b": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019fdda1-3b7d-7080-9d24-ba23d6c48952",
+        "model": "unknown"
+      },
+      "human_author": "AuraElicase <auraelicase@outlook.com>"
+    }
+  }
+}
