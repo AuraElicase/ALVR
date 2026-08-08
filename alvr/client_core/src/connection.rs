@@ -197,6 +197,11 @@ fn connection_pipeline(
 
     let settings = stream_config.settings;
     let negotiated_config = stream_config.negotiated_config;
+    let stream_port = negotiated_config
+        .ext()
+        .to_con()?
+        .stream_port
+        .unwrap_or(settings.connection.stream_port);
 
     *ctx.max_prediction.write() = Duration::from_millis(settings.headset.max_prediction_ms);
 
@@ -239,7 +244,7 @@ fn connection_pipeline(
     dbg_connection!("connection_pipeline: create StreamSocket");
     let stream_socket_builder = StreamSocketBuilder::listen_for_server(
         Duration::from_secs(1),
-        settings.connection.stream_port,
+        stream_port,
         stream_protocol,
         settings.connection.dscp,
         settings.connection.client_buffer_config,
@@ -256,7 +261,7 @@ fn connection_pipeline(
     dbg_connection!("connection_pipeline: accept connection");
     let mut stream_socket = stream_socket_builder.accept_from_server(
         server_ip,
-        settings.connection.stream_port,
+        stream_port,
         settings.connection.packet_size as _,
         HANDSHAKE_ACTION_TIMEOUT,
     )?;

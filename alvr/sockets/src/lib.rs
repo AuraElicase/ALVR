@@ -8,7 +8,7 @@ use serde::{Serialize, de::DeserializeOwned};
 use socket2::Socket;
 use std::{
     marker::PhantomData,
-    net::{IpAddr, Ipv4Addr, TcpListener},
+    net::{IpAddr, Ipv4Addr, TcpListener, UdpSocket},
     time::Duration,
 };
 
@@ -20,6 +20,19 @@ pub const CONTROL_PORT: u16 = 9943;
 pub const HANDSHAKE_PACKET_SIZE_BYTES: usize = 56; // this may change in future protocols
 pub const KEEPALIVE_INTERVAL: Duration = Duration::from_millis(500);
 pub const KEEPALIVE_TIMEOUT: Duration = Duration::from_secs(2);
+
+pub fn available_udp_port(preferred_port: u16) -> Result<u16> {
+    for port in preferred_port..=u16::MAX {
+        match UdpSocket::bind((LOCAL_IP, port)) {
+            Ok(_) => return Ok(port),
+            Err(e) if e.kind() == std::io::ErrorKind::AddrInUse => continue,
+            Err(e) => return Err(e.into()),
+        }
+    }
+
+    UdpSocket::bind((LOCAL_IP, preferred_port))?;
+    unreachable!()
+}
 
 pub const MDNS_SERVICE_TYPE: &str = "_alvr._tcp.local.";
 pub const MDNS_PROTOCOL_KEY: &str = "protocol";
@@ -262,5 +275,21 @@ impl SocketConnection {
 
     pub fn recv_poll(&mut self) -> ConResult<()> {
         self.stream_socket.recv()
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{LOCAL_IP, available_udp_port};
+    use std::net::UdpSocket;
+
+    #[test]
+    fn chooses_next_udp_port_when_preferred_port_is_busy() {
+        let socket = UdpSocket::bind((LOCAL_IP, 0)).unwrap();
+        let preferred_port = socket.local_addr().unwrap().port();
+
+        let selected_port = available_udp_port(preferred_port).unwrap();
+
+        assert_ne!(selected_port, preferred_port);
     }
 }

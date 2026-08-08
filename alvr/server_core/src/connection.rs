@@ -769,9 +769,30 @@ fn connection_pipeline(
 
     let wired = client_ip.is_loopback();
 
+    let stream_protocol = if wired {
+        SocketProtocol::Tcp
+    } else {
+        initial_settings.connection.stream_protocol
+    };
+    let stream_port = if !wired && matches!(stream_protocol, SocketProtocol::Udp) {
+        let preferred_port = initial_settings.connection.stream_port;
+        let port = alvr_sockets::available_udp_port(preferred_port).to_con()?;
+        if port != preferred_port {
+            warn!(
+                "Stream port {preferred_port} is already in use; using UDP port {port} for {client_hostname}"
+            );
+        }
+        port
+    } else {
+        initial_settings.connection.stream_port
+    };
+
+    let mut session = session_manager_lock.session().clone();
+    session.session_settings.connection.stream_port = stream_port;
+
     dbg_connection!("connection_pipeline: send streaming config");
     let stream_config_packet = StreamConfigPacket::new(
-        session_manager_lock.session(),
+        &session,
         ClientNegotiatedStreamingConfig {
             view_resolution: transcoding_view_resolution,
             refresh_rate_hint: fps,
@@ -782,7 +803,10 @@ fn connection_pipeline(
             wired,
             ext_str: String::new(),
         }
-        .with_ext(NegotiatedStreamingConfigExt {}),
+        .with_ext(NegotiatedStreamingConfigExt {
+            stream_port: (stream_port != initial_settings.connection.stream_port)
+                .then_some(stream_port),
+        }),
     )
     .to_con()?;
 
@@ -808,12 +832,6 @@ fn connection_pipeline(
         return Ok(());
     }
 
-    let stream_protocol = if wired {
-        SocketProtocol::Tcp
-    } else {
-        initial_settings.connection.stream_protocol
-    };
-
     dbg_connection!("connection_pipeline: Finishing handshake");
     let mut socket = SocketConnection::from_client_connection(
         socket,
@@ -821,7 +839,7 @@ fn connection_pipeline(
         stream_config_packet,
         StreamSocketConfig {
             protocol: stream_protocol,
-            port: initial_settings.connection.stream_port,
+            port: stream_port,
             buffer_config: initial_settings.connection.server_buffer_config,
             max_packet_size: initial_settings.connection.packet_size as _,
             dscp: initial_settings.connection.dscp,

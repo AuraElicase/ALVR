@@ -77,7 +77,8 @@ pub enum ClientConnectionResult {
 
 #[derive(Serialize, Deserialize)]
 pub struct NegotiatedStreamingConfigExt {
-    // Nothing for now
+    #[serde(default)]
+    pub stream_port: Option<u16>,
 }
 
 #[derive(Serialize, Deserialize, Clone)]
@@ -103,9 +104,7 @@ impl ClientNegotiatedStreamingConfig {
     pub fn ext(&self) -> Result<NegotiatedStreamingConfigExt> {
         let _ext_json = json::from_str::<json::Value>(&self.ext_str)?;
 
-        // decode values here
-
-        Ok(NegotiatedStreamingConfigExt {})
+        Ok(serde_json::from_value(_ext_json)?)
     }
 }
 
