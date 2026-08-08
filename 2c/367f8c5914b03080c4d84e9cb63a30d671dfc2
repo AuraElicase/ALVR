@@ -1,0 +1,28 @@
+alvr/dashboard/resources/languages/en-US.json
+  s_d06db02b2b8489::t_32d78679d0b465 1-61
+alvr/dashboard/resources/languages/zh-CN.json
+  s_d06db02b2b8489::t_3499f832ef03f0 1-213
+alvr/dashboard/src/language.rs
+  s_d06db02b2b8489::t_9d30a913ceac80 1-154
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "2c367f8c5914b03080c4d84e9cb63a30d671dfc2",
+  "prompts": {},
+  "humans": {
+    "h_8e6780fc7b4bb1": {
+      "author": "AuraElicase <auraelicase@outlook.com>"
+    }
+  },
+  "sessions": {
+    "s_d06db02b2b8489": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019fdd4c-cf7f-71e2-b470-2baec1b361a9",
+        "model": "unknown"
+      },
+      "human_author": "AuraElicase <auraelicase@outlook.com>"
+    }
+  }
+}
