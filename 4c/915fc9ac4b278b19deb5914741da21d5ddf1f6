@@ -1,0 +1,24 @@
+alvr/sockets/src/stream_socket/udp.rs
+  s_768f104d4fbb66::t_c12504f5b07961 12,15-16,55-71
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "4c915fc9ac4b278b19deb5914741da21d5ddf1f6",
+  "prompts": {},
+  "humans": {
+    "h_8e6780fc7b4bb1": {
+      "author": "AuraElicase <auraelicase@outlook.com>"
+    }
+  },
+  "sessions": {
+    "s_768f104d4fbb66": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019fdf52-148f-7ed2-b619-a8465326c34d",
+        "model": "unknown"
+      },
+      "human_author": "AuraElicase <auraelicase@outlook.com>"
+    }
+  }
+}
