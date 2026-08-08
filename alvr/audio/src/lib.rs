@@ -24,6 +24,12 @@ use std::{collections::VecDeque, sync::Arc, thread, time::Duration};
 
 pub use cpal::Device;
 
+fn device_name_contains(device_name: &str, expected: &str) -> bool {
+    device_name
+        .to_lowercase()
+        .contains(&expected.to_lowercase())
+}
+
 fn device_from_custom_config(
     host: &Host,
     config: &CustomAudioDeviceConfig,
@@ -118,15 +124,44 @@ pub fn new_virtual_microphone_pair(config: MicrophoneDevicesConfig) -> Result<(D
 
     let sink = host
             .output_devices()?
-            .find(|d| d.name().unwrap_or_default().contains(sink_name))
+            .find(|d| device_name_contains(&d.name().unwrap_or_default(), sink_name))
             .context("Virtual Audio Cable, VB-CABLE or VoiceMeeter not found. Please install or reinstall one")?;
 
     let source = host
         .input_devices()?
-        .find(|d| d.name().unwrap_or_default().contains(source_name))
+        .find(|d| device_name_contains(&d.name().unwrap_or_default(), source_name))
         .context("Matching output microphone not found. Did you rename it?")?;
 
     Ok((sink, source))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::device_name_contains;
+
+    #[test]
+    fn virtual_device_matching_ignores_case() {
+        assert!(device_name_contains(
+            "VoiceMeeter Input (VB-Audio Voicemeeter VAIO)",
+            "VoiceMeeter Input"
+        ));
+        assert!(device_name_contains(
+            "VB-Audio Voicemeeter VAIO",
+            "VoiceMeeter VAIO"
+        ));
+    }
+
+    #[test]
+    fn virtual_device_matching_keeps_substring_behavior() {
+        assert!(device_name_contains(
+            "CABLE Output (VB-Audio Virtual Cable)",
+            "CABLE Output"
+        ));
+        assert!(!device_name_contains(
+            "Speakers (High Definition Audio)",
+            "CABLE Output"
+        ));
+    }
 }
 
 pub fn input_sample_rate(dev: &Device) -> Result<u32> {
