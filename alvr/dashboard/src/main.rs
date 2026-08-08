@@ -2,6 +2,7 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 mod dashboard;
+mod language;
 
 #[cfg(not(target_arch = "wasm32"))]
 mod data_sources;
@@ -29,6 +30,11 @@ fn get_filesystem_layout() -> afs::Layout {
 
 #[cfg(not(target_arch = "wasm32"))]
 fn main() {
+    language::init(
+        get_filesystem_layout()
+            .config_dir
+            .join("dashboard_language"),
+    );
     use alvr_common::ALVR_VERSION;
     use alvr_common::info;
     use alvr_filesystem as afs;

@@ -3,9 +3,10 @@ use super::{
     presets::{PresetControl, builtin_schema},
 };
 use crate::dashboard::ServerRequest;
+use crate::language::{self, LanguageOption};
 use alvr_gui_common::{DisplayString, theme};
 use alvr_session::{SessionSettings, Settings};
-use eframe::egui::{Align, Frame, Grid, Layout, RichText, ScrollArea, Ui};
+use eframe::egui::{Align, ComboBox, Frame, Grid, Layout, RichText, ScrollArea, Ui};
 #[cfg(target_arch = "wasm32")]
 use instant::Instant;
 use serde_json as json;
@@ -190,6 +191,38 @@ impl SettingsTab {
                         .num_columns(2)
                         .min_col_width(MIN_COLUMN_SIZE)
                         .show(ui, |ui| {
+                            if self.selected_top_tab_id == "extra" {
+                                let mut option = language::language_option();
+                                ui.label(language::tr("Language"));
+                                ComboBox::from_id_salt("dashboard_language")
+                                    .selected_text(language::tr(match option {
+                                        LanguageOption::SystemDefault => "System Default",
+                                        LanguageOption::English => "English",
+                                        LanguageOption::SimplifiedChinese => "Simplified Chinese",
+                                    }))
+                                    .show_ui(ui, |ui| {
+                                        ui.selectable_value(
+                                            &mut option,
+                                            LanguageOption::SystemDefault,
+                                            language::tr("System Default"),
+                                        );
+                                        ui.selectable_value(
+                                            &mut option,
+                                            LanguageOption::English,
+                                            language::tr("English"),
+                                        );
+                                        ui.selectable_value(
+                                            &mut option,
+                                            LanguageOption::SimplifiedChinese,
+                                            language::tr("Simplified Chinese"),
+                                        );
+                                    });
+                                if option != language::language_option() {
+                                    language::set_language_option(option);
+                                }
+                                ui.end_row();
+                            }
+
                             if let Some(session_fragment) = &mut self.session_settings_json {
                                 let session_fragments_mut =
                                     session_fragment.as_object_mut().unwrap();
