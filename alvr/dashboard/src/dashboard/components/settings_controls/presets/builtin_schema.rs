@@ -393,6 +393,37 @@ pub fn microphone_schema() -> PresetSchemaNode {
                 content: None,
             })
         }
+
+        #[cfg(windows)]
+        for (source_name, sink_name) in alvr_audio::voice_meeter_devices() {
+            microhone_options.push(HigherOrderChoiceOption {
+                display_name: source_name.clone(),
+                modifiers: vec![
+                    bool_modifier("session_settings.audio.microphone.enabled", true),
+                    string_modifier(
+                        "session_settings.audio.microphone.content.devices.variant",
+                        "Custom",
+                    ),
+                    string_modifier(
+                        "session_settings.audio.microphone.content.devices.content.Custom.sink.variant",
+                        "NameSubstring",
+                    ),
+                    string_modifier(
+                        "session_settings.audio.microphone.content.devices.content.Custom.sink.content.NameSubstring",
+                        &sink_name,
+                    ),
+                    string_modifier(
+                        "session_settings.audio.microphone.content.devices.content.Custom.source.variant",
+                        "NameSubstring",
+                    ),
+                    string_modifier(
+                        "session_settings.audio.microphone.content.devices.content.Custom.source.content.NameSubstring",
+                        &source_name,
+                    ),
+                ],
+                content: None,
+            });
+        }
     }
 
     PresetSchemaNode::HigherOrderChoice(HigherOrderChoiceSchema {

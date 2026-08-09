@@ -83,6 +83,49 @@ pub fn new_input(config: Option<CustomAudioDeviceConfig>) -> Result<Device> {
     Ok(device)
 }
 
+#[cfg(windows)]
+fn voice_meeter_sink_name(source_name: &str) -> Option<String> {
+    let output_start = source_name.to_ascii_lowercase().find("output")?;
+    let mut sink_name = source_name.to_owned();
+    sink_name.replace_range(output_start..output_start + "output".len(), "Input");
+    Some(sink_name)
+}
+
+#[cfg(windows)]
+pub fn voice_meeter_devices() -> Vec<(String, String)> {
+    let host = cpal::default_host();
+    let input_names = host
+        .input_devices()
+        .into_iter()
+        .flatten()
+        .filter_map(|device| device.name().ok())
+        .filter(|name| {
+            device_name_contains(name, "VoiceMeeter") && device_name_contains(name, "Output")
+        })
+        .collect::<Vec<_>>();
+    let output_names = host
+        .output_devices()
+        .into_iter()
+        .flatten()
+        .filter_map(|device| device.name().ok())
+        .collect::<Vec<_>>();
+
+    let mut devices = input_names
+        .into_iter()
+        .filter_map(|source_name| {
+            let sink_name = voice_meeter_sink_name(&source_name)?;
+            output_names
+                .iter()
+                .any(|name| device_name_contains(name, &sink_name))
+                .then_some((source_name, sink_name))
+        })
+        .collect::<Vec<_>>();
+
+    devices.sort_by(|a, b| a.0.to_lowercase().cmp(&b.0.to_lowercase()));
+    devices.dedup();
+    devices
+}
+
 // returns (sink, source)
 pub fn new_virtual_microphone_pair(config: MicrophoneDevicesConfig) -> Result<(Device, Device)> {
     // No-op on Windows (this is windows specific code)
@@ -138,6 +181,15 @@ pub fn new_virtual_microphone_pair(config: MicrophoneDevicesConfig) -> Result<(D
 #[cfg(test)]
 mod tests {
     use super::device_name_contains;
+
+    #[cfg(windows)]
+    #[test]
+    fn voice_meeter_source_maps_to_sink() {
+        assert_eq!(
+            super::voice_meeter_sink_name("VoiceMeeter Output (VB-Audio VoiceMeeter VAIO)"),
+            Some("VoiceMeeter Input (VB-Audio VoiceMeeter VAIO)".into())
+        );
+    }
 
     #[test]
     fn virtual_device_matching_ignores_case() {
