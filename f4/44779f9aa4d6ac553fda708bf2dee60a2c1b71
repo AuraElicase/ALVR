@@ -1,0 +1,26 @@
+alvr/audio/src/lib.rs
+  s_889aae2818e068::t_c72e9126dcea68 86-128,185-193
+alvr/dashboard/src/dashboard/components/settings_controls/presets/builtin_schema.rs
+  s_889aae2818e068::t_4fa39490d9fe30 396-426
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "f444779f9aa4d6ac553fda708bf2dee60a2c1b71",
+  "prompts": {},
+  "humans": {
+    "h_8e6780fc7b4bb1": {
+      "author": "AuraElicase <auraelicase@outlook.com>"
+    }
+  },
+  "sessions": {
+    "s_889aae2818e068": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019fe6f2-6187-7eb3-a2de-ec92b6333e39",
+        "model": "unknown"
+      },
+      "human_author": "AuraElicase <auraelicase@outlook.com>"
+    }
+  }
+}
