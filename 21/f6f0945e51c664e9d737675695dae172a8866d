@@ -1,0 +1,26 @@
+alvr/client_openxr/src/stream.rs
+  s_889aae2818e068::t_22a8d271214efa 199-201
+alvr/graphics/resources/staging_fragment.glsl
+  s_889aae2818e068::t_f3cd00242a95ca 8,18
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "21f6f0945e51c664e9d737675695dae172a8866d",
+  "prompts": {},
+  "humans": {
+    "h_8e6780fc7b4bb1": {
+      "author": "AuraElicase <auraelicase@outlook.com>"
+    }
+  },
+  "sessions": {
+    "s_889aae2818e068": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019fe6f2-6187-7eb3-a2de-ec92b6333e39",
+        "model": "unknown"
+      },
+      "human_author": "AuraElicase <auraelicase@outlook.com>"
+    }
+  }
+}
