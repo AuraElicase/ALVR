@@ -196,8 +196,9 @@ impl StreamContext {
             !((core_ctx.platform().is_pico()
                 || (core_ctx.platform() == Platform::SamsungGalaxyXR))
                 && config.enable_hdr),
-            // TODO: Find a driver heuristic for the limited range bug instead?
-            core_ctx.platform() != Platform::SamsungGalaxyXR && !config.enable_hdr,
+            // Server encoders advertise full-range output. Keep this disabled until the range is
+            // negotiated explicitly instead of guessing from the headset platform.
+            false,
             config.encoding_gamma,
             config.upscaling.clone(),
         );

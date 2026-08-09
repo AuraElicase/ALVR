@@ -5,7 +5,7 @@ precision mediump float;
 
 uniform samplerExternalOES tex;
 
-// Convert from limited colors to full
+// Convert limited-range colors to full range.
 const float LIMITED_MIN = 16.0 / 255.0;
 const float LIMITED_MAX = 235.0 / 255.0;
 
@@ -15,7 +15,7 @@ out vec4 out_color;
 void main() {
     vec3 color = texture(tex, uv).rgb;
 #ifdef FIX_LIMITED_RANGE
-    color = LIMITED_MIN + ((LIMITED_MAX - LIMITED_MIN) * color);
+    color = clamp((color - LIMITED_MIN) / (LIMITED_MAX - LIMITED_MIN), 0.0, 1.0);
 #endif
     out_color = vec4(color, 1.0);
 }
