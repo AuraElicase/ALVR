@@ -66,6 +66,41 @@ fn is_streaming(client_hostname: &str) -> bool {
         .is_some_and(|c| c.connection_state == ConnectionState::Streaming)
 }
 
+fn wait_for_streaming(client_hostname: &str) -> bool {
+    loop {
+        let state = SESSION_MANAGER
+            .read()
+            .client_list()
+            .get(client_hostname)
+            .map(|client| client.connection_state.clone());
+
+        match state {
+            Some(ConnectionState::Connecting) => thread::sleep(STREAMING_RECV_TIMEOUT),
+            Some(ConnectionState::Streaming) => return true,
+            _ => return false,
+        }
+    }
+}
+
+fn drain_microphone_packets(
+    client_hostname: &str,
+    microphone_receiver: &mut alvr_sockets::StreamReceiver<()>,
+) {
+    if !wait_for_streaming(client_hostname) {
+        return;
+    }
+
+    while is_streaming(client_hostname) {
+        match microphone_receiver.recv(STREAMING_RECV_TIMEOUT) {
+            Ok(_) | Err(ConnectionError::TryAgain(_)) => (),
+            Err(ConnectionError::Other(e)) => {
+                warn!("Microphone stream ended while draining packets: {e}");
+                return;
+            }
+        }
+    }
+}
+
 // Compute a hash over all steamvr-restart settings and client-negotiated values.
 // The small SteamvrHmdInitConfig carries the negotiated resolution/fps; everything else comes from
 // Settings directly, using the same derivation as the old full SteamvrHmdInitConfig did.
@@ -984,36 +1019,56 @@ fn connection_pipeline(
     let microphone_thread = if let Switch::Enabled(config) =
         initial_settings.audio.microphone.clone()
     {
-        #[allow(unused_variables)]
-        let (sink, source) = alvr_audio::new_virtual_microphone_pair(config.devices).to_con()?;
-
-        #[cfg(windows)]
-        if let Ok(id) = alvr_audio::get_windows_device_id(&source) {
-            ctx.events_sender
-                .send(ServerCoreEvent::SetOpenvrProperty {
-                    device_id: *alvr_common::HEAD_ID,
-                    prop: alvr_session::OpenvrProperty {
-                        key: alvr_session::OpenvrPropKey::AudioDefaultRecordingDeviceIdString,
-                        value: id,
-                    },
-                })
-                .ok();
-        }
-
+        let buffering = config.buffering;
+        let microphone_sample_rate = streaming_caps.microphone_sample_rate;
         let client_hostname = client_hostname.clone();
-        thread::spawn(move || {
-            alvr_common::show_err(alvr_audio::play_audio_loop(
-                {
-                    let client_hostname = client_hostname.clone();
-                    move || is_streaming(&client_hostname)
-                },
-                &sink,
-                1,
-                streaming_caps.microphone_sample_rate,
-                config.buffering,
-                &mut microphone_receiver,
-            ));
-        })
+
+        #[allow(unused_variables)]
+        let microphone_devices = alvr_audio::new_virtual_microphone_pair(config.devices);
+
+        match microphone_devices {
+            Ok((sink, source)) => {
+                #[cfg(windows)]
+                if let Ok(id) = alvr_audio::get_windows_device_id(&source) {
+                    ctx.events_sender
+                        .send(ServerCoreEvent::SetOpenvrProperty {
+                            device_id: *alvr_common::HEAD_ID,
+                            prop: alvr_session::OpenvrProperty {
+                                key: alvr_session::OpenvrPropKey::AudioDefaultRecordingDeviceIdString,
+                                value: id,
+                            },
+                        })
+                        .ok();
+                }
+
+                thread::spawn(move || {
+                    if !wait_for_streaming(&client_hostname) {
+                        return;
+                    }
+
+                    if let Err(e) = alvr_audio::play_audio_loop(
+                        {
+                            let client_hostname = client_hostname.clone();
+                            move || is_streaming(&client_hostname)
+                        },
+                        &sink,
+                        1,
+                        microphone_sample_rate,
+                        buffering,
+                        &mut microphone_receiver,
+                    ) {
+                        error!("Microphone playback error: {e}");
+                        drain_microphone_packets(&client_hostname, &mut microphone_receiver);
+                    }
+                })
+            }
+            Err(e) => {
+                error!("Microphone passthrough is unavailable: {e}");
+                thread::spawn(move || {
+                    drain_microphone_packets(&client_hostname, &mut microphone_receiver);
+                })
+            }
+        }
     } else {
         thread::spawn(|| ())
     };
