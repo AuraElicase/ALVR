@@ -1,0 +1,24 @@
+alvr/server_core/src/connection.rs
+  s_05bd65a58ba21b::t_12c91b185f5f36 69-103,1022-1025,1027-1042,1044-1062,1064-1070
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "612f9be992caf66a47c4a7df682b49c4a8d90c26",
+  "prompts": {},
+  "humans": {
+    "h_8e6780fc7b4bb1": {
+      "author": "AuraElicase <auraelicase@outlook.com>"
+    }
+  },
+  "sessions": {
+    "s_05bd65a58ba21b": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019fe470-922a-7f52-9d77-730c4c853d37",
+        "model": "unknown"
+      },
+      "human_author": "AuraElicase <auraelicase@outlook.com>"
+    }
+  }
+}
