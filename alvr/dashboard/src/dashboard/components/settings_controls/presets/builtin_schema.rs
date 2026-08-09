@@ -298,6 +298,53 @@ pub fn microphone_schema() -> PresetSchemaNode {
 
 #[cfg(not(target_os = "linux"))]
 pub fn game_audio_schema() -> PresetSchemaNode {
+    let mut options = vec![
+        HigherOrderChoiceOption {
+            display_name: "Disabled".into(),
+            modifiers: vec![bool_modifier(
+                "session_settings.audio.game_audio.enabled",
+                false,
+            )],
+            content: None,
+        },
+        HigherOrderChoiceOption {
+            display_name: "System Default".to_owned(),
+            modifiers: vec![
+                bool_modifier("session_settings.audio.game_audio.enabled", true),
+                bool_modifier(
+                    "session_settings.audio.game_audio.content.device.set",
+                    false,
+                ),
+            ],
+            content: None,
+        },
+    ];
+
+    if cfg!(windows) {
+        for (display_name, device_name) in [
+            ("VoiceMeeter", "VoiceMeeter Input"),
+            ("VoiceMeeter Aux", "VoiceMeeter Aux Input"),
+            ("VoiceMeeter VAIO3", "VoiceMeeter VAIO3 Input"),
+        ] {
+            options.push(HigherOrderChoiceOption {
+                display_name: display_name.into(),
+                modifiers: vec![
+                    bool_modifier("session_settings.audio.game_audio.enabled", true),
+                    bool_modifier("session_settings.audio.game_audio.content.device.set", true),
+                    string_modifier(
+                        "session_settings.audio.game_audio.content.device.content.variant",
+                        "NameSubstring",
+                    ),
+                    string_modifier(
+                        "session_settings.audio.game_audio.content.device.content.NameSubstring",
+                        device_name,
+                    ),
+                ],
+                content: None,
+            });
+        }
+    }
+
     PresetSchemaNode::HigherOrderChoice(HigherOrderChoiceSchema {
         name: "Headset speaker".into(),
         strings: [(
@@ -308,29 +355,7 @@ pub fn game_audio_schema() -> PresetSchemaNode {
         .into_iter()
         .collect(),
         flags: HashSet::new(),
-        options: vec![
-            HigherOrderChoiceOption {
-                display_name: "Disabled".into(),
-                modifiers: vec![bool_modifier(
-                    "session_settings.audio.game_audio.enabled",
-                    false,
-                )],
-                content: None,
-            },
-            HigherOrderChoiceOption {
-                display_name: "System Default".to_owned(),
-                modifiers: vec![
-                    bool_modifier("session_settings.audio.game_audio.enabled", true),
-                    bool_modifier(
-                        "session_settings.audio.game_audio.content.device.set",
-                        false,
-                    ),
-                ],
-                content: None,
-            },
-        ]
-        .into_iter()
-        .collect(),
+        options: options.into_iter().collect(),
         default_option_display_name: "System Default".into(),
         gui: ChoiceControlType::ButtonGroup,
     })

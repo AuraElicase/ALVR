@@ -13,8 +13,15 @@ use windows::{
     core::GUID,
 };
 
+fn normalize_device_name(name: &str) -> String {
+    name.split_whitespace()
+        .collect::<Vec<_>>()
+        .join(" ")
+        .to_lowercase()
+}
+
 fn get_windows_device(device: &Device) -> Result<IMMDevice> {
-    let device_name = device.name()?;
+    let device_name = normalize_device_name(&device.name()?);
 
     unsafe {
         // This will fail the second time is called, ignore the error
@@ -39,7 +46,7 @@ fn get_windows_device(device: &Device) -> Result<IMMDevice> {
                 .GetValue(&PKEY_Device_FriendlyName)?
                 .to_string();
 
-            if imm_device_name == device_name {
+            if normalize_device_name(&imm_device_name) == device_name {
                 return Ok(imm_device);
             }
         }

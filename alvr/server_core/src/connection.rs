@@ -977,7 +977,9 @@ fn connection_pipeline(
                             })
                             .ok();
                     } else {
-                        continue;
+                        warn!(
+                            "Could not set SteamVR audio playback device; continuing with selected capture device"
+                        );
                     };
 
                     if let Err(e) = alvr_audio::record_audio_blocking(
