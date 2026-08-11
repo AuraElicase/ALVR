@@ -83,11 +83,7 @@ fn parse_quoted_value(raw_value: &str, env_path: &Path, line_no: usize, quote: c
     let inner = &raw_value[1..raw_value.len() - 1];
 
     if quote == '"' {
-        inner
-            .replace(r#"\""#, "\"")
-            .replace(r#"\n"#, "\n")
-            .replace(r#"\r"#, "\r")
-            .replace(r#"\t"#, "\t")
+        inner.replace(r#"\""#, "\"").replace(r#"\\"#, "\\")
     } else {
         inner.to_owned()
     }
