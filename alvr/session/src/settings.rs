@@ -816,17 +816,26 @@ pub struct GameAudioConfig {
 
 #[derive(SettingsSchema, Serialize, Deserialize, Clone)]
 pub enum MicrophoneDevicesConfig {
+    #[schema(strings(display_name = "System audio device"))]
+    SystemDevice(CustomAudioDeviceConfig),
+    #[schema(flag = "hidden")]
     Automatic,
+    #[schema(flag = "hidden")]
     #[schema(strings(display_name = "Virtual Audio Cable"))]
     VAC,
+    #[schema(flag = "hidden")]
     #[schema(strings(display_name = "VB Cable"))]
     VBCable,
+    #[schema(flag = "hidden")]
     #[schema(strings(display_name = "VoiceMeeter"))]
     VoiceMeeter,
+    #[schema(flag = "hidden")]
     #[schema(strings(display_name = "VoiceMeeter Aux"))]
     VoiceMeeterAux,
+    #[schema(flag = "hidden")]
     #[schema(strings(display_name = "VoiceMeeter VAIO3"))]
     VoiceMeeterVaio3,
+    #[schema(flag = "hidden")]
     Custom {
         #[schema(strings(help = "This device is used by ALVR to output microphone audio"))]
         sink: CustomAudioDeviceConfig,
@@ -1930,11 +1939,12 @@ pub fn session_settings_default() -> SettingsDefault {
                 content: MicrophoneConfigDefault {
                     gui_collapsed: true,
                     devices: MicrophoneDevicesConfigDefault {
+                        SystemDevice: default_custom_audio_device.clone(),
                         Custom: MicrophoneDevicesConfigCustomDefault {
                             source: default_custom_audio_device.clone(),
                             sink: default_custom_audio_device,
                         },
-                        variant: MicrophoneDevicesConfigDefaultVariant::Automatic,
+                        variant: MicrophoneDevicesConfigDefaultVariant::SystemDevice,
                     },
                     buffering: AudioBufferingConfigDefault {
                         gui_collapsed: true,

@@ -363,7 +363,7 @@ pub fn game_audio_schema() -> PresetSchemaNode {
 
 #[cfg(not(target_os = "linux"))]
 pub fn microphone_schema() -> PresetSchemaNode {
-    let mut microhone_options = vec![HigherOrderChoiceOption {
+    let mut microphone_options = vec![HigherOrderChoiceOption {
         display_name: "Disabled".to_owned(),
         modifiers: vec![bool_modifier(
             "session_settings.audio.microphone.enabled",
@@ -372,65 +372,33 @@ pub fn microphone_schema() -> PresetSchemaNode {
         content: None,
     }];
 
-    if cfg!(windows) {
-        for (key, display_name) in [
-            ("Automatic", "Automatic"),
-            ("VAC", "Virtual Audio Cable"),
-            ("VBCable", "VB Cable"),
-            ("VoiceMeeter", "VoiceMeeter"),
-            ("VoiceMeeterAux", "VoiceMeeter Aux"),
-            ("VoiceMeeterVaio3", "VoiceMeeter VAIO3"),
-        ] {
-            microhone_options.push(HigherOrderChoiceOption {
-                display_name: display_name.into(),
-                modifiers: vec![
-                    bool_modifier("session_settings.audio.microphone.enabled", true),
-                    string_modifier(
-                        "session_settings.audio.microphone.content.devices.variant",
-                        key,
-                    ),
-                ],
-                content: None,
-            })
-        }
-
-        #[cfg(windows)]
-        for (source_name, sink_name) in alvr_audio::voice_meeter_devices() {
-            microhone_options.push(HigherOrderChoiceOption {
-                display_name: source_name.clone(),
-                modifiers: vec![
-                    bool_modifier("session_settings.audio.microphone.enabled", true),
-                    string_modifier(
-                        "session_settings.audio.microphone.content.devices.variant",
-                        "Custom",
-                    ),
-                    string_modifier(
-                        "session_settings.audio.microphone.content.devices.content.Custom.sink.variant",
-                        "NameSubstring",
-                    ),
-                    string_modifier(
-                        "session_settings.audio.microphone.content.devices.content.Custom.sink.content.NameSubstring",
-                        &sink_name,
-                    ),
-                    string_modifier(
-                        "session_settings.audio.microphone.content.devices.content.Custom.source.variant",
-                        "NameSubstring",
-                    ),
-                    string_modifier(
-                        "session_settings.audio.microphone.content.devices.content.Custom.source.content.NameSubstring",
-                        &source_name,
-                    ),
-                ],
-                content: None,
-            });
-        }
+    for device_name in alvr_audio::output_device_names() {
+        microphone_options.push(HigherOrderChoiceOption {
+            display_name: device_name.clone(),
+            modifiers: vec![
+                bool_modifier("session_settings.audio.microphone.enabled", true),
+                string_modifier(
+                    "session_settings.audio.microphone.content.devices.variant",
+                    "SystemDevice",
+                ),
+                string_modifier(
+                    "session_settings.audio.microphone.content.devices.content.SystemDevice.variant",
+                    "NameSubstring",
+                ),
+                string_modifier(
+                    "session_settings.audio.microphone.content.devices.content.SystemDevice.content.NameSubstring",
+                    &device_name,
+                ),
+            ],
+            content: None,
+        });
     }
 
     PresetSchemaNode::HigherOrderChoice(HigherOrderChoiceSchema {
         name: "Headset microphone".into(),
         strings: HashMap::new(),
         flags: HashSet::new(),
-        options: microhone_options.into_iter().collect(),
+        options: microphone_options.into_iter().collect(),
         default_option_display_name: "Disabled".into(),
         gui: ChoiceControlType::Dropdown,
     })

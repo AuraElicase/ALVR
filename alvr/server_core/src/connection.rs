@@ -1031,7 +1031,9 @@ fn connection_pipeline(
         match microphone_devices {
             Ok((sink, source)) => {
                 #[cfg(windows)]
-                if let Ok(id) = alvr_audio::get_windows_device_id(&source) {
+                if let Some(source) = source
+                    && let Ok(id) = alvr_audio::get_windows_device_id(&source)
+                {
                     ctx.events_sender
                         .send(ServerCoreEvent::SetOpenvrProperty {
                             device_id: *alvr_common::HEAD_ID,
