@@ -73,4 +73,7 @@ CMakeLists.txt
 cmake-build-debug/
 
 *.jks
+.env
+.env.local
+.env.*.local
 settings.local.json

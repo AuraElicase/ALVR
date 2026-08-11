@@ -192,6 +192,8 @@ For Debian, it requires to have the `non-free` repository to be enabled:
   
 ## 2. Setting environment variables
 
+`cargo xtask` now auto-loads the repository root `.env` for Android-related subcommands. Copy `.env.example` to `.env`, then fill in the paths for your machine.
+
 For Windows, set the environment variables:
 
 * `JAVA_HOME`:

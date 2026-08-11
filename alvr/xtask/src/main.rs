@@ -2,6 +2,7 @@ mod build;
 mod ci;
 mod command;
 mod dependencies;
+mod env;
 mod format;
 mod packaging;
 mod version;
@@ -70,6 +71,18 @@ enum BuildPlatform {
     Linux,
     Macos,
     Android,
+}
+
+fn needs_android_env(subcommand: &str) -> bool {
+    matches!(
+        subcommand,
+        "prepare-deps"
+            | "build-client"
+            | "build-client-lib"
+            | "build-client-xr-lib"
+            | "package-client"
+            | "package-client-lib"
+    )
 }
 
 pub fn print_help_and_exit(message: &str) -> ! {
@@ -169,6 +182,10 @@ fn main() {
     if args.contains(["-h", "--help"]) {
         println!("{HELP_STR}");
     } else if let Ok(Some(subcommand)) = args.subcommand() {
+        if needs_android_env(&subcommand) {
+            env::load_android_env();
+        }
+
         let no_nvidia = args.contains("--no-nvidia");
         let is_release = args.contains("--release");
         let profile = if is_release {
