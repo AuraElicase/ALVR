@@ -1,0 +1,24 @@
+alvr/dashboard/src/dashboard/components/settings_controls/presets/builtin_schema.rs
+  s_dbda746a353b9f::t_504371bc814f02 364-386,399,519-538
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.6.21",
+  "base_commit_sha": "bc35262b54d802f323975a35aad95a1c14d63e44",
+  "prompts": {},
+  "humans": {
+    "h_8e6780fc7b4bb1": {
+      "author": "AuraElicase <auraelicase@outlook.com>"
+    }
+  },
+  "sessions": {
+    "s_dbda746a353b9f": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "019feff0-eefc-7670-a535-97cacebeaf14",
+        "model": "unknown"
+      },
+      "human_author": "AuraElicase <auraelicase@outlook.com>"
+    }
+  }
+}
