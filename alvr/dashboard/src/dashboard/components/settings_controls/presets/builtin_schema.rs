@@ -362,6 +362,29 @@ pub fn game_audio_schema() -> PresetSchemaNode {
 }
 
 #[cfg(not(target_os = "linux"))]
+fn microphone_device_option(device_name: String) -> HigherOrderChoiceOption {
+    HigherOrderChoiceOption {
+        display_name: device_name.clone(),
+        modifiers: vec![
+            bool_modifier("session_settings.audio.microphone.enabled", true),
+            string_modifier(
+                "session_settings.audio.microphone.content.devices.variant",
+                "SystemDevice",
+            ),
+            string_modifier(
+                "session_settings.audio.microphone.content.devices.SystemDevice.variant",
+                "NameSubstring",
+            ),
+            string_modifier(
+                "session_settings.audio.microphone.content.devices.SystemDevice.NameSubstring",
+                &device_name,
+            ),
+        ],
+        content: None,
+    }
+}
+
+#[cfg(not(target_os = "linux"))]
 pub fn microphone_schema() -> PresetSchemaNode {
     let mut microphone_options = vec![HigherOrderChoiceOption {
         display_name: "Disabled".to_owned(),
@@ -373,25 +396,7 @@ pub fn microphone_schema() -> PresetSchemaNode {
     }];
 
     for device_name in alvr_audio::output_device_names() {
-        microphone_options.push(HigherOrderChoiceOption {
-            display_name: device_name.clone(),
-            modifiers: vec![
-                bool_modifier("session_settings.audio.microphone.enabled", true),
-                string_modifier(
-                    "session_settings.audio.microphone.content.devices.variant",
-                    "SystemDevice",
-                ),
-                string_modifier(
-                    "session_settings.audio.microphone.content.devices.content.SystemDevice.variant",
-                    "NameSubstring",
-                ),
-                string_modifier(
-                    "session_settings.audio.microphone.content.devices.content.SystemDevice.content.NameSubstring",
-                    &device_name,
-                ),
-            ],
-            content: None,
-        });
+        microphone_options.push(microphone_device_option(device_name));
     }
 
     PresetSchemaNode::HigherOrderChoice(HigherOrderChoiceSchema {
@@ -510,4 +515,24 @@ pub fn eye_face_tracking_schema() -> PresetSchemaNode {
         default_option_display_name: "Disabled".into(),
         gui: ChoiceControlType::ButtonGroup,
     })
+}
+
+#[cfg(all(test, not(target_os = "linux")))]
+mod tests {
+    #[test]
+    fn microphone_device_modifier_paths_exist_in_session() {
+        let session = serde_json::to_value(alvr_session::SessionConfig::default()).unwrap();
+
+        for modifier in super::microphone_device_option("Test output".into()).modifiers {
+            let mut value = &session;
+            for segment in modifier.target_path.split('.') {
+                value = value.get(segment).unwrap_or_else(|| {
+                    panic!(
+                        "segment {segment:?} is missing from microphone modifier path {:?}",
+                        modifier.target_path
+                    )
+                });
+            }
+        }
+    }
 }
